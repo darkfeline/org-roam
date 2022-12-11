@@ -922,7 +922,7 @@ If region is active, then use it instead of the node at point."
         (if (buffer-file-name)
             (delete-file (buffer-file-name)))
         (set-buffer-modified-p nil)
-        ;; In this was done during capture, abort the capture process.
+        ;; If this was done during capture, abort the capture process.
         (when (and org-capture-mode
                    (buffer-base-buffer (current-buffer)))
           (org-capture-kill))
@@ -1036,7 +1036,9 @@ and when nil is returned the node will be filtered out."
   (let ((node (org-roam-node-at-point 'assert)))
     (save-excursion
       (goto-char (org-roam-node-point node))
-      (org-roam-property-add "ROAM_REFS" ref))))
+      (org-roam-property-add "ROAM_REFS" (if (memq " " (string-to-list ref))
+                                             (concat "\"" ref "\"")
+                                           ref)))))
 
 (defun org-roam-ref-remove (&optional ref)
   "Remove a REF from the node at point."
@@ -1064,7 +1066,8 @@ and when nil is returned the node will be filtered out."
 (defun org-roam-tag-add (tags)
   "Add TAGS to the node at point."
   (interactive
-   (list (completing-read-multiple "Tag: " (org-roam-tag-completions))))
+   (list (let ((crm-separator "[ 	]*:[ 	]*"))
+           (completing-read-multiple "Tag: " (org-roam-tag-completions)))))
   (let ((node (org-roam-node-at-point 'assert)))
     (save-excursion
       (goto-char (org-roam-node-point node))

@@ -178,18 +178,7 @@ archives to =package-archives=:
 #+END_SRC
 
 Org-roam also depends on a recent version of Org, which can be obtained in Org's
-package repository (see info:org#Installation). To use Org's ELPA archive:
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-#+END_SRC
-
-Once you have added your preferred archive, you need to update the
-local package list using:
-
-#+BEGIN_EXAMPLE
-  M-x package-refresh-contents RET
-#+END_EXAMPLE
+package repository (see info:org#Installation).
 
 Once you have done that, you can install Org-roam and its dependencies
 using:
@@ -652,6 +641,19 @@ rendering reference links), set ~org-roam-mode-sections~ as follows:
 #+begin_src emacs-lisp
   (setq org-roam-mode-sections
         '((org-roam-backlinks-section :unique t)
+          org-roam-reflinks-section))
+#+end_src
+
+The backlinks section ~org-roam-backlinks-section~ also supports a
+predicate to filter backlinks, ~:show-backlink-p~.  This can be used
+as follows:
+
+#+begin_src emacs-lisp
+  (defun my-org-roam-show-backlink-p (backlink)
+    (not (member "daily" (org-roam-node-tags (org-roam-backlink-source-node backlink)))))
+
+  (setq org-roam-mode-sections
+        '((org-roam-backlinks-section :unique t :show-backlink-p my/org-roam-show-backlink-p)
           org-roam-reflinks-section))
 #+end_src
 
